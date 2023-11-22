@@ -5,7 +5,7 @@ lr=0.01
 server_lr=0.02
 model='resnet'
 norm='group_norm' #'batch_norm'
-dataset='cifar100'
+dataset='cifar10'
 cut=3
 epochs=1000
 
@@ -14,6 +14,6 @@ CUDA_VISIBLE_DEVICES=0 python3.7 main_sfl.py  --save_dir=SFL/${dataset}_${model}
 --frac=${frac} \
 --local_bs=${local_bs} --lr=${lr} --server_lr=${server_lr} \
 --model=${model} --norm=${norm} \
---dataset=${dataset} --cut=${cut} --iid --bottleneck_layer
+--dataset=${dataset} --cut=${cut} --iid --bottleneck_compression 8
 
 

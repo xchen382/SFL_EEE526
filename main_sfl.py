@@ -35,9 +35,9 @@ if __name__ == '__main__':
     # build model
     if args.model == 'resnet':
         if args.dataset == 'cifar100':
-            net_glob = resnet18(args.norm,args.cut,args.bottleneck_layer,num_classes=100).to(args.device)
+            net_glob = resnet18(args.norm,args.cut,args.bottleneck_compression,num_classes=100).to(args.device)
         elif args.dataset == 'cifar10':
-            net_glob = resnet18(args.norm,args.cut,args.bottleneck_layer,num_classes=10).to(args.device)
+            net_glob = resnet18(args.norm,args.cut,args.bottleneck_compression,num_classes=10).to(args.device)
 
         local_glob,cloud_glob = net_glob.local, net_glob.cloud
         input = torch.randn(1,3,32,32).cuda()
@@ -63,7 +63,6 @@ if __name__ == '__main__':
 
     logger.info('local_glob {}'.format(local_glob))
     logger.info('cloud_glob {}'.format(cloud_glob))
-    exit()
     local_glob.train()
     cloud_glob.train()
 

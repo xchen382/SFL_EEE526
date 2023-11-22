@@ -32,7 +32,7 @@ def args_parser():
 
     # sfl arguments
     parser.add_argument('--cut', type=int, default=1, help="cut layer")
-    parser.add_argument('--bottleneck_layer', action='store_true', help='whether to use bottleneck layer to compress the activations/gradients.')
+    parser.add_argument('--bottleneck_compression', type=int, default=1, help="communication compression rate using bottleneck layer (BL). If <=1, then no BL is added.")
     
 
 
