@@ -15,5 +15,5 @@ CUDA_VISIBLE_DEVICES=0 python main_sfl.py  --save_dir=SFL/${dataset}_${model}_nu
 --frac=${frac} \
 --local_bs=${local_bs} --lr=${lr} --server_lr=${server_lr} \
 --model=${model} --norm=${norm} \
---dataset=${dataset} --cut=${cut} --iid 
+--dataset=${dataset} --cut=${cut} --iid
 

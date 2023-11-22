@@ -1,4 +1,4 @@
-num_users=500
+num_users=10
 frac=0.1
 local_bs=50
 lr=0.01
@@ -9,11 +9,11 @@ dataset='cifar100'
 cut=3
 epochs=1000
 
-CUDA_VISIBLE_DEVICES=0 python main_sfl.py  --save_dir=SFL/${dataset}_${model}_num_users${num_users}_cut${cut}_frac${frac}_iid \
+CUDA_VISIBLE_DEVICES=0 python3.7 main_sfl.py  --save_dir=SFL/${dataset}_${model}_num_users${num_users}_cut${cut}_frac${frac}_iid \
 --epochs=$epochs --num_users=$num_users \
 --frac=${frac} \
 --local_bs=${local_bs} --lr=${lr} --server_lr=${server_lr} \
 --model=${model} --norm=${norm} \
---dataset=${dataset} --cut=${cut} --iid 
+--dataset=${dataset} --cut=${cut} --iid --bottleneck_layer
 
 

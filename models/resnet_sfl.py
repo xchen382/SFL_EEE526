@@ -118,7 +118,8 @@ class AuxClassifier(nn.Module):
 
 
 class Local(nn.Module):
-    def __init__(self, block, cut, num_block, norm, num_classes=100):
+    def __init__(self, block, cut, bottleneck_layer, num_block, norm, num_classes=100):
+        self.bottleneck_layer = bottleneck_layer
         output_channel = [64,128,256,512]
         strides = [1,2,2,2]
         super().__init__()
@@ -141,6 +142,10 @@ class Local(nn.Module):
         for layer in range(0,cut-1):
             self.conv_x.append(self._make_layer(block, output_channel[layer], num_block[layer], strides[layer], norm))
         self.conv_x = nn.Sequential(*self.conv_x)
+        if self.bottleneck_layer:
+            # encoder of bottleneck_layer
+            self.BL_encoder = nn.Conv2d(output_channel[layer], output_channel[layer]//compression_rate, kernel_size=3, stride=1, padding=1, bias=False)
+        print('Compression Rate using Bottleneck Layer is {}x'.format(compression_rate))
         self.local_classifier = AuxClassifier(self.get_act_size(),num_classes=num_classes)
 
     def get_act_size(self):
@@ -150,6 +155,8 @@ class Local(nn.Module):
     def forward(self, x):
         output = self.conv1(x)
         output = self.conv_x(output)
+        if self.bottleneck_layer:
+            output = self.BL_encoder(output)
         return output
     
     def local_forward(self, x):
@@ -237,11 +244,11 @@ class Cloud(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, num_block, cut,num_classes=100,norm='batch_norm'):
+    def __init__(self, block, num_block, cut, bottleneck_layer, num_classes=100,norm='batch_norm'):
         super().__init__()
         if cut >0:
-            self.local = Local(block,cut,num_block,norm,num_classes=num_classes)
-            self.cloud = Cloud(block,cut,num_block,in_channels=self.local.in_channels,num_classes=num_classes)
+            self.local = Local(block,cut,bottleneck_layer,num_block,norm,num_classes=num_classes)
+            self.cloud = Cloud(block,cut,bottleneck_layer,num_block,in_channels=self.local.in_channels,num_classes=num_classes)
         else:
             self.local = None
             self.cloud = Local(block,100,num_block,norm,num_classes=num_classes)
@@ -250,10 +257,10 @@ class ResNet(nn.Module):
         output = self.cloud(self.local(x))
         return output
 
-def resnet18(norm,cut,num_classes):
+def resnet18(norm,cut,bottleneck_layer,num_classes):
     """ return a ResNet 18 object
     """
-    return ResNet(BasicBlock, [2, 2, 2, 2],cut,num_classes=num_classes,norm=norm)
+    return ResNet(BasicBlock, [2, 2, 2, 2],cut,bottleneck_layer,num_classes=num_classes,norm=norm)
 
 def resnet34():
     """ return a ResNet 34 object
